@@ -111,6 +111,9 @@ fi
 [[ ${WARDEN_SELENIUM} -eq 1 ]] \
     && appendEnvPartialIfExists "selenium"
 
+[[ ${WARDEN_AMD} -eq 1 ]] \
+    && appendEnvPartialIfExists "${WARDEN_ENV_TYPE}.amd"
+
 [[ ${WARDEN_MAGEPACK} -eq 1 ]] \
     && appendEnvPartialIfExists "${WARDEN_ENV_TYPE}.magepack"
 

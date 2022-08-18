@@ -1,3 +1,9 @@
+# Warden Sonassi Fork
+This fork adds in a new image to allow emulisation of AMD CPU. This allows legacy applications (such as some node libraries)
+to still be accessible whilst maintaining performance improvements from ARM images.
+
+To use add `WARDEN_AMD=1` to your `.env` file. And use `warden amd` to access it.
+
 # Warden
 
 ![Docker Image Architures](https://img.shields.io/badge/architecture-arm64%20%7C%20amd64-success)
