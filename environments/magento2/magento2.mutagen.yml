@@ -3,7 +3,8 @@ sync:
   defaults:
     mode: two-way-resolved
     watch:
-      pollingInterval: 10
+      mode: portable
+      pollingInterval: 5
     ignore:
       vcs: true
       paths:
