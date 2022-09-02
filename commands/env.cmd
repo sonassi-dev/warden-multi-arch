@@ -138,6 +138,12 @@ if [[ "${WARDEN_PARAMS[0]}" == "down" ]]; then
     disconnectPeeredServices "$(renderEnvNetworkName)"
 fi
 
+## Pass in current user ID and group for Mac so that it can be used to set perms properly
+if [[ $OSTYPE =~ ^darwin ]]; then
+    export WARDEN_UID=$(id -u)
+    export WARDEN_GID=$(id -g)
+fi
+
 ## connect peered service containers to environment network
 if [[ "${WARDEN_PARAMS[0]}" == "up" ]]; then
     ## create environment network for attachments if it does not already exist
@@ -165,50 +171,7 @@ export TRAEFIK_ADDRESS="$(docker container inspect traefik \
     ' 2>/dev/null || true
 )"
 
-if [[ $OSTYPE =~ ^darwin ]]; then
-    export MUTAGEN_SYNC_FILE="${WARDEN_DIR}/environments/${WARDEN_ENV_TYPE}/${WARDEN_ENV_TYPE}.mutagen.yml"
-
-    if [[ -f "${WARDEN_ENV_PATH}/.warden/mutagen.yml" ]]; then
-        export MUTAGEN_SYNC_FILE="${WARDEN_ENV_PATH}/.warden/mutagen.yml"
-    fi
-fi
-
-## pause mutagen sync if needed
-if [[ "${WARDEN_PARAMS[0]}" == "stop" ]] \
-    && [[ $OSTYPE =~ ^darwin ]] && [[ -f "${MUTAGEN_SYNC_FILE}" ]]
-then
-    warden sync pause
-fi
-
 ## pass ochestration through to docker-compose
 docker-compose \
     --project-directory "${WARDEN_ENV_PATH}" -p "${WARDEN_ENV_NAME}" \
     "${DOCKER_COMPOSE_ARGS[@]}" "${WARDEN_PARAMS[@]}" "$@"
-
-## resume mutagen sync if available and php-fpm container id hasn't changed
-if ([[ "${WARDEN_PARAMS[0]}" == "up" ]] || [[ "${WARDEN_PARAMS[0]}" == "start" ]]) \
-    && [[ $OSTYPE =~ ^darwin ]] && [[ -f "${MUTAGEN_SYNC_FILE}" ]] \
-    && [[ $(warden sync list | grep -i 'Status: \[Paused\]' | wc -l | awk '{print $1}') == "1" ]] \
-    && [[ $(warden env ps -q php-fpm) ]] \
-    && [[ $(docker container inspect $(warden env ps -q php-fpm) --format '{{ .State.Status }}') = "running" ]] \
-    && [[ $(warden env ps -q php-fpm) = $(warden sync list | grep -i 'URL: docker' | awk -F'/' '{print $3}') ]]
-then
-    warden sync resume
-fi
-
-## start mutagen sync if needed
-if ([[ "${WARDEN_PARAMS[0]}" == "up" ]] || [[ "${WARDEN_PARAMS[0]}" == "start" ]]) \
-    && [[ $OSTYPE =~ ^darwin ]] && [[ -f "${MUTAGEN_SYNC_FILE}" ]] \
-    && [[ $(warden sync list | grep -i 'Connection state: Connected' | wc -l | awk '{print $1}') != "2" ]] \
-    && [[ $(warden env ps -q php-fpm) ]] \
-    && [[ $(docker container inspect $(warden env ps -q php-fpm) --format '{{ .State.Status }}') = "running" ]]
-then
-    warden sync start
-fi
-
-## stop mutagen sync if needed
-if [[ "${WARDEN_PARAMS[0]}" == "down" ]] \
-    && [[ $OSTYPE =~ ^darwin ]] && [[ -f "${MUTAGEN_SYNC_FILE}" ]]
-then
-    warden sync stop
-fi

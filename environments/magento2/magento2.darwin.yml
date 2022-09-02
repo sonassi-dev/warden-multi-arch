@@ -9,8 +9,24 @@ x-environment: &environment
 
 services:
   nginx: { volumes: *volumes }
-  php-fpm: { volumes: *volumes, environment: *environment }
+  php-fpm:
+    build:
+      context: /opt/warden/utils/php-fpm-usermod/Dockerfile
+      args:
+        - UID=${WARDEN_UID}
+        - GID=${WARDEN_GID}
+        - CHOWN_DIR_LIST=${CHOWN_DIR_LIST:-}
+        - PHP_VERSION=${PHP_VERSION}
+    volumes: *volumes
+
   php-debug: { volumes: *volumes, environment: *environment }
 
 volumes:
   appdata:
+    name: ${WARDEN_ENV_NAME}-nfsmount
+    driver: local
+    driver_opts:
+      type: nfs
+      o: addr=host.docker.internal,rw,nolock,hard,nointr,nfsvers=3
+      device: ":/System/Volumes/Data/${PWD}"
+
