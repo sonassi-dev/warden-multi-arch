@@ -11,7 +11,7 @@ services:
   nginx: { volumes: *volumes }
   php-fpm:
     build:
-      context: /opt/warden/utils/php-fpm-usermod/Dockerfile
+      context: /opt/warden/utils/php-fpm-usermod
       args:
         - UID=${WARDEN_UID}
         - GID=${WARDEN_GID}
