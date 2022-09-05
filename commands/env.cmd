@@ -138,11 +138,9 @@ if [[ "${WARDEN_PARAMS[0]}" == "down" ]]; then
     disconnectPeeredServices "$(renderEnvNetworkName)"
 fi
 
-## Pass in current user ID and group for Mac so that it can be used to set perms properly
-if [[ $OSTYPE =~ ^darwin ]]; then
-    export WARDEN_UID=$(id -u)
-    export WARDEN_GID=$(id -g)
-fi
+## Pass in current user ID and group so that it can be used to set perms properly on Mac
+export HOST_UID=$(id -u)
+export HOST_GID=$(id -g)
 
 ## connect peered service containers to environment network
 if [[ "${WARDEN_PARAMS[0]}" == "up" ]]; then

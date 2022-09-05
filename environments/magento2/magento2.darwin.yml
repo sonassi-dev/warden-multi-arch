@@ -10,14 +10,15 @@ x-environment: &environment
 services:
   nginx: { volumes: *volumes }
   php-fpm:
+    image: wk-php-fpm
     build:
       context: /opt/warden/utils/php-fpm-usermod
       args:
-        - UID=${WARDEN_UID}
-        - GID=${WARDEN_GID}
-        - CHOWN_DIR_LIST=${CHOWN_DIR_LIST:-}
+        - HOST_UID=${HOST_UID}
+        - HOST_GID=${HOST_GID}
         - PHP_VERSION=${PHP_VERSION}
     volumes: *volumes
+    environment: *environment
 
   php-debug: { volumes: *volumes, environment: *environment }
 
