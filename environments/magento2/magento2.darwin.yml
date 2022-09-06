@@ -10,9 +10,9 @@ x-environment: &environment
 services:
   nginx: { volumes: *volumes }
   php-fpm:
-    image: wk-php-fpm
+    image: warden-php-m2-wk:${PHP_VERSION}
     build:
-      context: /opt/warden/utils/php-fpm-usermod
+      context: /opt/warden/utils/warden-php-m2-wk
       args:
         - HOST_UID=${HOST_UID}
         - HOST_GID=${HOST_GID}
@@ -20,7 +20,16 @@ services:
     volumes: *volumes
     environment: *environment
 
-  php-debug: { volumes: *volumes, environment: *environment }
+  php-debug:
+    image: warden-php-m2-wk-xdebug3:${PHP_VERSION}
+    build:
+      context: /opt/warden/utils/warden-php-m2-xdebug3-wk
+      args:
+        - HOST_UID=${HOST_UID}
+        - HOST_GID=${HOST_GID}
+        - PHP_VERSION=${PHP_VERSION}
+    volumes: *volumes
+    environment: *environment
 
 volumes:
   appdata:
