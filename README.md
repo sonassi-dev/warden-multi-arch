@@ -23,7 +23,7 @@ sudo mkdir /opt/warden
 sudo chown $(whoami) /opt/warden
 
 # Clone multi-arch fork of Warden (this repository) into the installation directory
-git clone https://github.com/drpayyne/warden-multi-arch.git /opt/warden
+git clone git@github.com:sonassi-dev/warden-multi-arch.git /opt/warden
 
 # Export Warden to PATH. (use your appropriate shell resource file; zshrc here.)
 echo 'export PATH="/opt/warden/bin:$PATH"' >> ~/.zshrc
