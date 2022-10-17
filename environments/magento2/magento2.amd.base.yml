@@ -8,7 +8,13 @@ services:
   amd:
     platform: linux/amd64
     hostname: "${WARDEN_ENV_NAME}-amd"
-    image: ghcr.io/drpayyne/warden-php-m2:7.4
+    image: warden-php-m2-wk:${PHP_VERSION}
+    build:
+      context: /opt/warden/utils/warden-php-m2-wk
+      args:
+        - HOST_UID=${HOST_UID}
+        - HOST_GID=${HOST_GID}
+        - PHP_VERSION=${PHP_VERSION}
     volumes: *volumes
     environment:
       - DOCKER_DEFAULT_PLATFORM=linux/amd64
